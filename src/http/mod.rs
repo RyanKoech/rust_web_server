@@ -9,3 +9,4 @@ pub use query_string::{QueryString};
 pub use response::Response;
 pub use status_code::StatusCode;
 pub use request::ParseError;
+pub use method::Method;
