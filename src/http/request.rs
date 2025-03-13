@@ -1,4 +1,4 @@
-use super::Method;
+use super::method::{Method, MethodError};
 use std::convert::TryFrom;
 use std::convert::From;
 use std::error::Error;
@@ -35,11 +35,20 @@ impl TryFrom<&[u8]> for Request {
 
 
       let (method, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
-      let (path, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+      let (mut path, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
       let (protocol, _) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
 
       if protocol != "HTTP/1.1" {
           return Err(ParseError::InvalidProtocol);
+      }
+
+      let method: Method = method.parse()?;
+
+
+      let mut query_string = None;
+      if let Some(i) = path.find('?') {
+          query_string = Some(&path[i + 1..]);
+          path = &path[..i];
       }
 
 
@@ -77,6 +86,14 @@ impl ParseError {
     }
     }
 }
+
+
+impl From<MethodError> for ParseError {
+  fn from(_: MethodError) -> Self {
+      Self::InvalidMethod
+  }
+}
+
 
 impl From<Utf8Error> for ParseError {
   fn from(value: Utf8Error) -> Self {
