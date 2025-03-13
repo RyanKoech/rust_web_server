@@ -45,6 +45,18 @@ pub enum ParseError {
   InvalidMethod,
 }
 
+
+fn get_next_word(request: &str) -> Option<(&str, &str)> {
+  for (i, c) in request.chars().enumerate() {
+      if c == ' ' || c == '\r' {
+          return Some((&request[..i], &request[i + 1..]));
+      }
+  }
+
+  None
+}
+
+
 impl ParseError {
     pub fn message(&self) -> &str {
       match self {
