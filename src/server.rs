@@ -28,8 +28,8 @@ impl Server {
                 Ok(_) => {
                   print!("Received a request {}", String::from_utf8_lossy(&buffer));
                   match Request::try_from(&buffer[..]) {
-                    Ok(_) => {
-                      
+                    Ok(request) => {
+                      dbg!(request);
                     },
                     Err(e) => print!("Failed to parse the request: {}", e),
                 };
