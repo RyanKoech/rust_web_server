@@ -6,16 +6,16 @@ use std::fmt::{Result as FmtResult, Display, Formatter, Debug};
 use std::str;
 use std::str::Utf8Error;
 
-pub struct Request {
-  path: String,
-  query_string: Option<String>,
+pub struct Request<'buf> {
+  path: &'buf str,
+  query_string: Option<&'buf str>,
   method: Method,
 }
 
-impl TryFrom<&[u8]> for Request {
+impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
     type Error = ParseError;
 
-    fn try_from(buf: &[u8]) -> Result<Self, Self::Error> {
+    fn try_from(buf: &'buf [u8]) -> Result<Request<'buf>, Self::Error> {
 
       // match str::from_utf8(buf) {
       //   Ok(_) => {},
@@ -52,8 +52,11 @@ impl TryFrom<&[u8]> for Request {
       }
 
 
-
-      unimplemented!()
+      Ok(Self {
+        path,
+        query_string,
+        method,
+    })
     }
 }
 
